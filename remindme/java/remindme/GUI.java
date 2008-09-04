@@ -55,7 +55,9 @@ public class GUI extends JFrame {
 		    MouseListener mouseListener = new MouseAdapter() {
 		                
 		        public void mouseClicked(MouseEvent e) {
-		            setVisible(!isVisible());
+		        	if (e.getButton()==MouseEvent.BUTTON1) {
+		        		setVisible(!isVisible());
+		        	}
 		        }
 		    };
 
