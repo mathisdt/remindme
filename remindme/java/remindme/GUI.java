@@ -9,6 +9,7 @@ import org.tiling.scheduling.examples.*;
 
 public class GUI extends JFrame {
 	
+	private static final long serialVersionUID = 1L;
 	private TrayIcon trayIcon;
 	private JPanel jPanel = null;
 	private JButton jButton = null;
