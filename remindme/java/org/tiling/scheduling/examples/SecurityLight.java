@@ -42,7 +42,7 @@ public class SecurityLight {
 	}
 
 	public static void main(String[] args) {
-		// London is at 51° 30' North, 0° 07' West
+		// London is at 51" 30' North, 0" 07' West
 		SecurityLight securityLight = new SecurityLight(51.0 + 30 / 60, -(0.0 + 7 / 60));
 		securityLight.start();
 	}
