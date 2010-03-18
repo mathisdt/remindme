@@ -2,6 +2,7 @@ package org.zephyrsoft.remindme;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.text.*;
 import java.util.*;
 import java.util.Timer;
 import javax.swing.*;
@@ -10,19 +11,26 @@ public class GUI extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
 	
-	/** Default: trigger event every 30 minutes */
-	private double minutes = 30;
+	public static final double DEFAULT_INTERVAL = 30;
+	public static final String DEFAULT_MESSAGE = "drink water";
+	
+	private double minutes = DEFAULT_INTERVAL;
+	private String msg = DEFAULT_MESSAGE;
 	
 	private final Timer timer = new Timer();
+	private TimerTask eventTask = null;
 	
 	private SystemTray tray;
 	private TrayIcon trayIcon;
 	private JLabel label = null;
 	
-	public GUI(Double minutes) {
+	public GUI(Double minutes, String msg) {
 		
 		if (minutes != null) {
 			this.minutes = minutes.doubleValue();
+		}
+		if (msg != null) {
+			this.msg = msg;
 		}
 		
 		createTrayIcon();
@@ -33,13 +41,15 @@ public class GUI extends JFrame {
 			setVisible(true);
 		}
 		
-		startTimer("Drink a glass of water!");
+		startTimer();
+		
+		startCountdown();
 	}
 	
-	private void startTimer(final String msg) {
+	private void startTimer() {
 		long interval = Math.round(minutes * 60 * 1000);
 		
-		timer.scheduleAtFixedRate(new TimerTask() {
+		eventTask = new TimerTask() {
 			public void run() {
 				System.out.println("firing event \"" + msg + "\"");
 				if (tray != null) {
@@ -49,10 +59,34 @@ public class GUI extends JFrame {
 				}
 
 			}
-		}, interval, interval);
+		};
+		timer.scheduleAtFixedRate(eventTask, interval, interval);
 		
-		System.out.println("scheduling event \"" + msg + "\" in "
+		System.out.println("scheduling recurring event \"" + msg + "\" with interval of "
 			+ minutes + " minutes");
+	}
+	
+	private void startCountdown() {
+		timer.scheduleAtFixedRate(new TimerTask() {
+			public void run() {
+				long togo = Math.abs(Math.round(minutes * 60) - Math.abs((eventTask.scheduledExecutionTime() - System.currentTimeMillis()) / 1000));
+				// togo in seconds
+				String text = (togo % 60) + " seconds";
+				togo = togo / 60;
+				// togo in minutes
+				text = (togo % 60) + " minutes, " + text;
+				togo = togo / 60;
+				// togo in hours
+				text = (togo % 24) + " hours, " + text;
+				togo = togo / 24;
+				// togo in days
+				text = togo + " days, " + text;
+				
+				label.setText(text);
+			}
+		}, 1000, 1000);
+		
+		System.out.println("starting countdown");
 	}
 	
 	/**
@@ -61,10 +95,12 @@ public class GUI extends JFrame {
 	private void initialize() {
 		setTitle("RemindMe");
 		JPanel content = new JPanel();
+		content.setLayout(new BorderLayout());
 		label = new JLabel();
-		content.add(label);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		content.add(label, BorderLayout.CENTER);
 		setContentPane(content);
-		setSize(new Dimension(557, 478));
+		setSize(new Dimension(350, 100));
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/clock.png")));
 		
 	}
