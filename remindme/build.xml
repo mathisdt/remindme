@@ -6,9 +6,7 @@
 <project default="jar" basedir=".">
 
 	<property name="start.dir" value="${basedir}" />
-	<property name="src.dir" value="${start.dir}/src" />
-	<property name="bin.dir" value="${start.dir}/src" />
-	<property name="res.dir" value="${start.dir}/res" />
+	<property name="bin.dir" value="${start.dir}/bin" />
 	<property name="lib.dir" value="${start.dir}/lib" />
 	<property name="target.dir" value="${start.dir}/target" />
 	<property name="release.dir" value="${start.dir}/release" />
@@ -42,10 +40,8 @@
 			<fileset dir="${bin.dir}">
 				<include name="org/zephyrsoft/**" />
 				<include name="*.properties" />
+				<include name="images/**" />
 				<exclude name="**/*.java" />
-			</fileset>
-			<fileset dir="${res.dir}">
-				<include name="**" />
 			</fileset>
 		</copy>
 
