@@ -24,11 +24,14 @@ public class Start {
 			.withLongOpt("text")
 			.create("t");
 		options.addOption(message);
+		Option boxOpt = new Option("b", "box", false, "use a message box instead of a tray notification");
+		options.addOption(boxOpt);
 		Option help = new Option("h", "help", false, "print this message");
 		options.addOption(help);
 		
 		Double min = null;
 		String msg = null;
+		boolean box = false;
 		
 		CommandLineParser parser = new PosixParser();
 		try {
@@ -52,11 +55,14 @@ public class Start {
 			if (line.hasOption("text")) {
 				msg = line.getOptionValue("text");
 			}
+			if (line.hasOption("box")) {
+				box = true;
+			}
 		} catch (ParseException exp) {
 			System.err.println("argument parsing failed - reason: " + exp.getMessage());
 		}
 
-		new GUI(min, msg);
+		new GUI(min, msg, box);
 		
 	}
 	

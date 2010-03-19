@@ -16,6 +16,7 @@ public class GUI extends JFrame {
 	
 	private double minutes = DEFAULT_INTERVAL;
 	private String msg = DEFAULT_MESSAGE;
+	private boolean box = false;
 	
 	private final Timer timer = new Timer();
 	private TimerTask eventTask = null;
@@ -24,7 +25,7 @@ public class GUI extends JFrame {
 	private TrayIcon trayIcon;
 	private JLabel label = null;
 	
-	public GUI(Double minutes, String msg) {
+	public GUI(Double minutes, String msg, boolean box) {
 		
 		if (minutes != null) {
 			this.minutes = minutes.doubleValue();
@@ -32,6 +33,7 @@ public class GUI extends JFrame {
 		if (msg != null) {
 			this.msg = msg;
 		}
+		this.box = box;
 		
 		createTrayIcon();
 		
@@ -52,7 +54,7 @@ public class GUI extends JFrame {
 		eventTask = new TimerTask() {
 			public void run() {
 				System.out.println("firing event \"" + msg + "\"");
-				if (tray != null) {
+				if (!box && tray != null) {
 					trayIcon.displayMessage("Reminder", msg, TrayIcon.MessageType.INFO);
 				} else {
 					JOptionPane.showMessageDialog(GUI.this, msg, "Reminder", JOptionPane.INFORMATION_MESSAGE);
