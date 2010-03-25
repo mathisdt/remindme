@@ -6,6 +6,9 @@ import java.text.*;
 import java.util.*;
 import java.util.Timer;
 import javax.swing.*;
+import javax.swing.border.*;
+import de.jutzig.jnotification.*;
+import de.jutzig.jnotification.animation.*;
 
 public class GUI extends JFrame {
 	
@@ -16,7 +19,11 @@ public class GUI extends JFrame {
 	
 	private double minutes = DEFAULT_INTERVAL;
 	private String msg = DEFAULT_MESSAGE;
+	
 	private boolean box = false;
+	
+	private static PopupManager manager;
+	private static JButton button;
 	
 	private final Timer timer = new Timer();
 	private TimerTask eventTask = null;
@@ -57,7 +64,12 @@ public class GUI extends JFrame {
 				if (!box && tray != null) {
 					trayIcon.displayMessage("Reminder", msg, TrayIcon.MessageType.INFO);
 				} else {
-					JOptionPane.showMessageDialog(GUI.this, msg, "Reminder", JOptionPane.INFORMATION_MESSAGE);
+//					JOptionPane.showMessageDialog(GUI.this, msg, "Reminder", JOptionPane.INFORMATION_MESSAGE);
+					manager = new PopupManager(9000, Corner.UPPER_RIGHT, new Point(40, 30));
+					JNotificationPopup popup = new JNotificationPopup(createComponent(msg));
+					button.addActionListener(new Dispose(popup, manager));
+					popup.setAnimator(new FadeIn(popup, 50));
+					manager.enqueuePopup(popup);
 				}
 
 			}
@@ -66,6 +78,24 @@ public class GUI extends JFrame {
 		
 		System.out.println("scheduling recurring event \"" + msg + "\" with interval of "
 			+ minutes + " minutes");
+	}
+	
+	private Component createComponent(final String message)
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		JLabel msglabel = new JLabel(message);
+		msglabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		msglabel.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(msglabel, BorderLayout.CENTER);
+		button = new JButton("Close");
+		JPanel buttonpanel = new JPanel();
+		buttonpanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttonpanel.add(button);
+		panel.add(buttonpanel, BorderLayout.SOUTH);
+		panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.RED, 4), BorderFactory.createEmptyBorder(20, 20, 20, 20)));
+		return panel;
+		
 	}
 	
 	private void startCountdown() {
@@ -149,4 +179,21 @@ public class GUI extends JFrame {
 		}
 	}
 	
+	class Dispose implements ActionListener{
+
+		JNotificationPopup popup;
+		PopupManager manager;
+		
+		public Dispose(JNotificationPopup popup, PopupManager manager) {
+			super();
+			this.popup = popup;
+			this.manager=manager;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			
+			manager.dequeuePopup(popup);
+		}
+		
+	}
 }
